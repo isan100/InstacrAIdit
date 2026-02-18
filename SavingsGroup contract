@@ -1,0 +1,31 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract SavingsGroupContract {
+    mapping(address => uint256) public savings;
+    mapping(address => bool) public isMember;
+
+    event MemberJoined(address member);
+    event SavingsDeposited(address member, uint256 amount);
+    event LoanRequested(address member, uint256 amount, uint256 duration, uint256 loanId);
+
+    uint256 public loanCounter;
+
+    function joinGroup() external {
+        require(!isMember[msg.sender], "Already a member");
+        isMember[msg.sender] = true;
+        emit MemberJoined(msg.sender);
+    }
+
+    function depositSavings() external payable {
+        require(isMember[msg.sender], "Not a member");
+        savings[msg.sender] += msg.value;
+        emit SavingsDeposited(msg.sender, msg.value);
+    }
+
+    function requestLoan(uint256 amount, uint256 duration) external {
+        require(isMember[msg.sender], "Not a member");
+        loanCounter++;
+        emit LoanRequested(msg.sender, amount, duration, loanCounter);
+    }
+}
